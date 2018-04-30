@@ -1,0 +1,60 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+body{
+  height: 100vh;
+  font-family: 'Raleway', sans-serif;
+  font-size: 20px;
+  color: white;
+  background:  linear-gradient(to top right, #71ae51 1%, #f3ba4b 25%, #e6873b 49%, #cf4845 66%,
+  #8b4593 88%, #449cd7 100%);
+}
+#root{
+  height: 100%;
+  width: 100%;
+}
+h1{
+  margin: 0;
+  text-align: center;
+  padding-top: 20px;
+}
+.date__wrapper{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.date__button{
+  transition: all .3s;
+}
+.date__button:hover{
+  color:  black;
+}
+.date__curent{
+  text-align: center;
+  padding: 0 20px;
+}
