@@ -54,8 +54,18 @@ export class Expanse extends Component {
     this.setState({[event.target.name]: event.target.value});
   }
 
+  handleEnter = () => {
+    const {onSubmite} = this.props;
+    const {transaction, category} = this.state;
+
+    onSubmite(-1 * Math.abs(parseFloat(transaction)), category);
+
+    // clean input
+    this.setState({transaction: null, category: null});
+  }
+
   render(){
-  	const {transaction, category} = this.state;
+    const {transaction, category} = this.state;
     return (
       <Container>
         <dl>

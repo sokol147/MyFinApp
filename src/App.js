@@ -31,6 +31,13 @@ const Nav = styled.nav`
   padding: 20px 0 15px;
 `;
 
+const Table = styled.table`
+  width: 300px;
+  text-align: center;
+  padding-top: 20px;
+  margin: 0 auto;
+`;
+
 class App extends Component {
   //add value on initialization moment
   constructor(props){
@@ -38,7 +45,8 @@ class App extends Component {
 
     this.state = {
       date: moment(),
-      navSelected: 'expanse'
+      navSelected: 'expanse',
+      transactions: [],
     };
   }
 
@@ -52,9 +60,32 @@ class App extends Component {
     this.setState({navSelected: event.target.getAttribute('name')});
   }
 
+  handleSubmiteTransaction = (sum, category) => {
+
+    // come after click Enter in Expanse
+    const {date: TodayDate, transactions} = this.state;
+
+    //create new transaction
+    const newTransaction = {
+      date: TodayDate.format('DD.MM.YYYY'),
+      category: category,
+      sum: sum,
+    };
+
+    const newTransactions = [...transactions, newTransaction];
+
+    newTransactions.sort((a,b) => {
+      const aDate = moment(a.date, 'DD.MM.YYYY');
+      const bDate = moment(b.date, 'DD.MM.YYYY');
+      return aDate.isAfter(bDate);
+    })
+
+    this.setState({transactions: newTransactions});
+  }
+
   render() {
 
-    const {date, navSelected} = this.state;
+    const {date, navSelected, transactions} = this.state;
 
     return (
         <section>
@@ -76,8 +107,32 @@ class App extends Component {
               </Link>
             </Nav>
 
-            {navSelected === 'expanse' ? <Expanse/> : <Incomes/>}
+            {navSelected === 'expanse' ? (
+              <Expanse onSubmite={this.handleSubmiteTransaction} />
+            ) : (
+              <Incomes onSubmite={this.handleSubmiteTransaction} />
+            )}
+            
 
+            <Table>
+              <tbody>
+                {transactions
+                  .filter(({date: transactionDate}) => 
+                    moment(transactionDate, 'DD.MM.YYYY').isSame(
+                      date,
+                      'month',
+                    ),
+                  )
+                  .map(({date, sum, category}, index) => (
+                    <tr key={index}>
+                      <td>{date}</td>
+                      <td>{sum} zl</td>
+                      <td>{category}</td>
+                   </tr>
+                ))
+              }
+              </tbody>
+            </Table>
           </main>
         </section>
       );
