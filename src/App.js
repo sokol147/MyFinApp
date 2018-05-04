@@ -43,6 +43,22 @@ class App extends Component {
   constructor(props){
     super(props);
 
+    let storageState = localStorage.getItem('state');
+    let initState;
+
+    if(storageState != null){
+      storageState = JSON.parse(storageState);
+      initState = {...storageState, date: moment(storageState.date)};
+    } else {
+      initState = {
+        date: moment(),
+        navSelected: 'incomes',
+        transactions: [],
+      };
+    }
+
+    this.state = initState;
+
     this.state = {
       date: moment(),
       navSelected: 'expanse',
@@ -83,6 +99,49 @@ class App extends Component {
     this.setState({transactions: newTransactions});
   }
 
+  componentDidUpdate(){
+    const {date} = this.state;
+    localStorage.setItem('state', JSON.stringify({...this.stete, date: date.format()}));
+  }
+
+  onToday = () => {
+    const {transactions, date} = this.state;
+
+    const currentMonthTransactions = transactions.filter(
+      ({date: transactionDate}) =>
+        moment(transactionDate, 'DD.MM.YYYY').isSame(date, 'month'),
+    );
+
+    const dailyMoney =
+      currentMonthTransactions.reduce(
+        (acc, transaction) =>
+          transaction.sum > 0 ? transaction.sum + acc : acc,
+        0,
+      ) / moment(date).daysInMonth();
+
+    const transactionsBeforeThisDayAndInThisDay = currentMonthTransactions.filter(
+      ({date: transactionDate}) =>
+        moment(transactionDate, 'DD.MM.YYYY').isBefore(
+          date,
+          'date',
+        ) ||
+        moment(transactionDate, 'DD.MM.YYYY').isSame(date, 'date'),
+    );
+
+    const expanseBeforeToday = transactionsBeforeThisDayAndInThisDay.reduce(
+      (acc, {sum}) => (sum < 0 ? acc + sum : acc),
+      0,
+    );
+
+    const incomeBeforeToday = date.date() * dailyMoney;
+
+    console.log({dailyMoney, expanseBeforeToday, incomeBeforeToday});
+
+    return (
+      (incomeBeforeToday + expanseBeforeToday).toFixed(2)
+    )
+  };
+
   render() {
 
     const {date, navSelected, transactions} = this.state;
@@ -96,6 +155,7 @@ class App extends Component {
               <p className='date__curent'>{date.format('DD.MM.YYYY')}</p>
               <DateButton onClick={this.handleAddDay} className='date__button'>{'\u25BA'}</DateButton>
             </div>
+            <p>For today: {this.onToday()} zl</p>
           </header>
           <main>
             <Nav>
